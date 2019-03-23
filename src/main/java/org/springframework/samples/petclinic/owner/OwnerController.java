@@ -39,6 +39,7 @@ import java.util.Map;
 class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
+    private static final String FIND_ALL = "";
     private final OwnerRepository owners;
 
 
@@ -75,28 +76,27 @@ class OwnerController {
     }
 
     @GetMapping("/owners")
-    public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
-
-        // allow parameterless GET request for /owners to return all records
-        if (owner.getLastName() == null) {
-            owner.setLastName(""); // empty string signifies broadest possible search
-        }
-
-        // find owners by last name
-        Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
-        if (results.isEmpty()) {
-            // no owners found
+    public String findOwners(Owner owner, BindingResult result, Map<String, Object> model) {
+        String searchTerm = owner.getLastName() != null ? owner.getLastName() : FIND_ALL;
+        Collection<Owner> owners = this.owners.findByLastName(searchTerm);
+        if (isEmpty(owners)) {
             result.rejectValue("lastName", "notFound", "not found");
             return "owners/findOwners";
-        } else if (results.size() == 1) {
-            // 1 owner found
-            owner = results.iterator().next();
+        } else if (hasUniqueOwner(owners)) {
+            owner = owners.iterator().next();
             return "redirect:/owners/" + owner.getId();
         } else {
-            // multiple owners found
-            model.put("selections", results);
+            model.put("selections", owners);
             return "owners/ownersList";
         }
+    }
+
+    private boolean hasUniqueOwner(Collection<Owner> owners) {
+        return owners.size() == 1;
+    }
+
+    private boolean isEmpty(Collection<Owner> owners) {
+        return owners.isEmpty();
     }
 
     @GetMapping("/owners/{ownerId}/edit")
@@ -107,7 +107,8 @@ class OwnerController {
     }
 
     @PostMapping("/owners/{ownerId}/edit")
-    public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId) {
+    public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result,
+        @PathVariable("ownerId") int ownerId) {
         if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {

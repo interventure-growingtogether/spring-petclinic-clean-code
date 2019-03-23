@@ -15,11 +15,11 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Map;
 
 /**
  * @author Juergen Hoeller
@@ -30,29 +30,27 @@ import java.util.Map;
 @Controller
 class VetController {
 
-    private final VetRepository vets;
+    private final VetService vetService;
 
-    public VetController(VetRepository clinicService) {
-        this.vets = clinicService;
+    public VetController(VetService vetService) {
+        this.vetService = vetService;
     }
 
     @GetMapping("/vets.html")
     public String showVetList(Map<String, Object> model) {
-        // Here we are returning an object of type 'Vets' rather than a collection of Vet
-        // objects so it is simpler for Object-Xml mapping
-        Vets vets = new Vets();
-        vets.getVetList().addAll(this.vets.findAll());
-        model.put("vets", vets);
+        List<VetView> v = findVets();
+        model.put("vets", v);
         return "vets/vetList";
     }
 
-    @GetMapping({ "/vets" })
-    public @ResponseBody Vets showResourcesVetList() {
-        // Here we are returning an object of type 'Vets' rather than a collection of Vet
-        // objects so it is simpler for JSon/Object mapping
-        Vets vets = new Vets();
-        vets.getVetList().addAll(this.vets.findAll());
-        return vets;
+    @GetMapping({"/vets"})
+    public @ResponseBody
+    List<VetView> showResourcesVetList() {
+        return findVets();
+    }
+
+    private List<VetView> findVets() {
+        return vetService.findVets();
     }
 
 }
