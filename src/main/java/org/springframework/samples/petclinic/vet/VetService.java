@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.vet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author <a href="mailto:slavisa.avramovic@escriba.de">avramovics</a>
@@ -17,6 +18,7 @@ public class VetService {
         this.vetRepository = vetRepository;
     }
 
+    @Transactional
     public List<VetView> findVets() {
         return vetRepository.findAll().stream().map(vet -> new VetView(vet)).collect(Collectors.toList());
     }
