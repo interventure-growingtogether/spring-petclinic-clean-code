@@ -26,13 +26,13 @@ import org.springframework.samples.petclinic.model.NamedEntity;
  * @author Arjen Poutsma
  */
 @XmlRootElement
-public class VetView {
+public class VetViewModel {
 
     private String firstName;
     private String lastName;
     private String specialties;
 
-    public VetView(Vet vet) {
+    public VetViewModel(Vet vet) {
         this.firstName = vet.getFirstName();
         this.lastName = vet.getLastName();
         this.specialties = toSpecialities(vet);

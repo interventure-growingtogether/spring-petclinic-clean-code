@@ -19,7 +19,7 @@ public class VetService {
     }
 
     @Transactional
-    public List<VetView> findVets() {
-        return vetRepository.findAll().stream().map(vet -> new VetView(vet)).collect(Collectors.toList());
+    public List<VetViewModel> findVets() {
+        return vetRepository.findAll().stream().map(vet -> new VetViewModel(vet)).collect(Collectors.toList());
     }
 }

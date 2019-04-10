@@ -45,7 +45,7 @@ public class VetControllerTests {
         radiology.setId(1);
         radiology.setName("radiology");
         helen.getSpecialties().add(radiology);
-        given(this.vets.findVets()).willReturn(Lists.newArrayList(new VetView(james), new VetView(helen)));
+        given(this.vets.findVets()).willReturn(Lists.newArrayList(new VetViewModel(james), new VetViewModel(helen)));
     }
 
     @Test

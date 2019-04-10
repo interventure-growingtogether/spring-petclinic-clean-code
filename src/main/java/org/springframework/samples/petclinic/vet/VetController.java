@@ -16,10 +16,10 @@
 package org.springframework.samples.petclinic.vet;
 
 import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Juergen Hoeller
@@ -37,19 +37,14 @@ class VetController {
     }
 
     @GetMapping("/vets.html")
-    public String showVetList(Map<String, Object> model) {
-        List<VetView> v = findVets();
-        model.put("vets", v);
-        return "vets/vetList";
+    public ModelAndView showVetView() {
+        List<VetViewModel> v = vetService.findVets();
+        return new ModelAndView("vets/vetList", "vets", v);
     }
 
     @GetMapping({"/vets"})
     public @ResponseBody
-    List<VetView> showResourcesVetList() {
-        return findVets();
-    }
-
-    private List<VetView> findVets() {
+    List<VetViewModel> findVets() {
         return vetService.findVets();
     }
 
