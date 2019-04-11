@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import java.util.function.Predicate;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -88,40 +90,24 @@ public class Owner extends Person {
         pet.setOwner(this);
     }
 
-    /**
-     * Return the Pet with the given name, or null if none found for this Owner.
-     *
-     * @param name to test
-     * @return true if pet name is already in use
-     */
-    public Pet getPet(String name) {
-        return getPet(name, false);
+    public Optional<Pet> getPet(String name) {
+       return getPetsInternal().stream()
+            .filter(isOld())
+            .filter(hasSameName(name))
+            .findFirst();
     }
 
-    /**
-     * Return the Pet with the given name, or null if none found for this Owner.
-     *
-     * @param name to test
-     * @return true if pet name is already in use
-     */
-    public Pet getPet(String name, boolean ignoreNew) {
-        name = name.toLowerCase();
-        for (Pet pet : getPetsInternal()) {
-            if (!ignoreNew || !pet.isNew()) {
-                String compName = pet.getName();
-                compName = compName.toLowerCase();
-                if (compName.equals(name)) {
-                    return pet;
-                }
-            }
-        }
-        return null;
+    private Predicate<Pet> hasSameName(String name) {
+        return p -> p.getName().equalsIgnoreCase(name);
+    }
+
+    private Predicate<Pet> isOld() {
+        return p -> !p.isNew();
     }
 
     @Override
     public String toString() {
         return new ToStringCreator(this)
-
                 .append("id", this.getId()).append("new", this.isNew())
                 .append("lastName", this.getLastName())
                 .append("firstName", this.getFirstName()).append("address", this.address)
