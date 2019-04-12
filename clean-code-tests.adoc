@@ -1,0 +1,19 @@
+== Spring PetClinic Test
+
+There's at least half a dozen reasons why Spring PetClinic is so well geared for clean code review.
+
+First, the expectation that the code quality level is already high enough, as it is being reviewed by thousand of souls on daily basis.
+
+Second, Spring as a frameworks strives for the similar goals as clean code, promoting good design, that is testable and easy to change.
+
+Third, crucial for this section, its quite well tested, JaCoCo plugin reports coverage that is above 90%.
+
+=== Clean Code Tests
+
+Is code coverage 90% enough? It sounds like it for sure. Here's a quote for you:
+
+QUOTE: How many tests should be in a test suite? Unfortunately, the metric many programmers use is “That seems like enough.” A test suite should test everything that could possibly break. The tests are insufficient so long as there are conditions that have not been explored by the tests or calculations that have not been validated.
+
+Still, CC celebrates the usage of a coverage tool, and 90% is surely a good starting point.
+
+=== The Sneaky

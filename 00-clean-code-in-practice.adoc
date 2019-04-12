@@ -1,0 +1,24 @@
+== Clean Code in Practice
+
+Do you use clean code practices in your work. If yes, why? If no, why?
+
+This post, follows the InterVenture Jam Session talk, "Clean Code in Practice". The talk is targeting an interesting phenomena. Most of the developers I know, are familiar and quite appreciative about the clean code practices, however, in reality they use only a handfull of routines.
+
+Let me give you an example. During the talk, amongst the thirty something developers of varying experience, all have said that they have heard about clean code. I followed with a question of who's using the routines on a daily basis. There was only a single hand still standing.
+
+What is behind this gap? Is it that we don't believe in the benefits of clean code? Or is it that the costs are not worth the benefit?
+
+Clean code in practice talk tries to asses the value of clean code when applied to real life applications. We target a well known Spring Petclinic example as an example of source code that is on pair to the code we do on our everyday basis. It reviews it from the clean code perspective and asses the value of the comments and changes brought upon the applied clean code practices. This series of blog posts are our findings.
+
+=== Cycling Helmet Analogy
+
+Why don't we use CC routines more often? I can express my belief with an analogy. Do you use a cycling helmet when going for a joy ride? Despite being an undisputable good thing, many don't. The belief that you won't really need it, combined with a slight nuisance of having to carry it around, topped with a potentially ruined hair style, makes the decision of ignoring the helmet quite likely. Even if it can be a life saver.
+
+It's not that we're not aware of the risk. I rarely see kids without the helmet. However, we ourselves, we're pro's. We ride for a long time, and believe competent enough that it will not happen to us, not to us or not this time.
+
+Until we fall. Afterwards, the helmet is a must, and we frown upon people ignoring it.
+
+
+
+
+

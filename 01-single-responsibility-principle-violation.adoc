@@ -1,0 +1,214 @@
+== Spring PetClinic - Single Responsibility Principle violation
+
+Amongst all the weak spot that our clean code review uncovers, the one discussed in this section is the most nasty one, and most sneaky one. Other weak spots are good placeholders for readability boosting, the anomaly we're about to discuss, is a design flow waiting to blow-up in your face.
+
+Observe the https://github.com/interventure-growingtogether/spring-petclinic-clean-code/blob/clean-code/src/test/java/org/springframework/samples/petclinic/vet/VetTests.java[VetTests.java] in the `clean-code` branch:
+
+[source,java]
+.VetTests.java
+----
+@Test
+public void testAddSpeciality() {
+    assertThat(vet.getSpecialties().size()).isEqualTo(0);
+    /*
+    Specialty s = new Specialty();
+    s.setName("oftamology");
+    vet.getSpecialties().add(s);
+    assertThat(vet.getSpecialties().size()).isEqualTo(1);
+    */
+}
+----
+
+If we uncomment the commented part, the test is failing. This is unexpected, and unexpected behaviour is what clean code is aiming to prevent.
+
+Remember, we want to go as far as we can without having to check the implementation of classes and methods. The failing test however, forces us to see what is the actual implementation of the `getSpecialities()` method.
+
+=== Code Inspection
+
+Here is the complete  https://github.com/interventure-growingtogether/spring-petclinic/blob/master/src/main/java/org/springframework/samples/petclinic/vet/Vet.java[Vet.java]:
+
+[source,java]
+.Vet.java
+----
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+
+import org.springframework.beans.support.MutableSortDefinition;
+import org.springframework.beans.support.PropertyComparator;
+import org.springframework.samples.petclinic.model.Person;
+
+@Entity
+@Table(name = "vets")
+public class Vet extends Person {
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"))
+    private Set<Specialty> specialties;
+
+    protected Set<Specialty> getSpecialtiesInternal() {
+        if (this.specialties == null) {
+            this.specialties = new HashSet<>();
+        }
+        return this.specialties;
+    }
+
+    protected void setSpecialtiesInternal(Set<Specialty> specialties) {
+        this.specialties = specialties;
+    }
+
+    @XmlElement
+    public List<Specialty> getSpecialties() {
+        List<Specialty> sortedSpecs = new ArrayList<>(getSpecialtiesInternal());
+        PropertyComparator.sort(sortedSpecs,
+                new MutableSortDefinition("name", true, true));
+        return Collections.unmodifiableList(sortedSpecs);
+    }
+
+    public int getNrOfSpecialties() {
+        return getSpecialtiesInternal().size();
+    }
+
+    public void addSpecialty(Specialty specialty) {
+        getSpecialtiesInternal().add(specialty);
+    }
+
+}
+----
+Being the entity class, the main, the only, the single responsibility of this class, should be to convey and synchronize the state of the object with the according record of the `vets` table in database.
+
+I see two notable symptoms that the class is doing more than one thing. How about you, take the time, and look at the source, consider the imports as well.
+
+=== Method Names Inspection
+
+First symptom can be inferred from the method names. Can you tell what is the difference btw `getSpecialtiesInternal()` and `getSpecialties()`? Without looking at the code, I would assume that there exist two fields, `specialties` and `specialtiesInternal`.
+When looking at the code, its easy to see that this is not the case. Rather, `Vet.java` is maintaining two different representations of `specialities`, one for internal purposes (whatever that might be), the other for public use.
+
+So, if we have two different representations for two different purposes, its likely that the class will have more than one reason to change. It violates Single Responsibility Principle.
+
+=== Import Section Inspection
+
+ QUOTE: Good software design requires that we separate concepts at different levels and place them in different containers. We don’t want lower and higher level concepts mixed together.
+
+Considering the main responsibility of the class, the only reasonable expectation is that the import section holds only `java.util.*` and `javax.persistence.*` packages. However, we see imports from `import javax.xml.*` and `import org.springframework.*`.
+
+If you check how and where the class is being used, you'll notice that its properties are directly accessed from the view as well. This is what's behind the method name confusion, the `getSpecialities()` is accessed from the view.
+
+=== Refactored Vet.java
+
+In fact, the proper SRP certified Vet.java class should look something like:
+
+[source]
+.Vet.java
+----
+@Entity
+@Table(name = "vets")
+public class Vet extends Person {
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"), inverseJoinColumns = @JoinColumn(name = "specialty_id"))
+    private Set<Specialty> specialties;
+
+    public Set<Specialty> getSpecialties() {
+        if (this.specialties == null) {
+            this.specialties = new HashSet<>();
+        }
+        return this.specialties;
+    }
+}
+----
+
+
+=== The Nasty
+
+The nastiness of this weak spot reflects in the fact that the impact of change required for fixing it is quite fair. Spring Petclinic, obivously for brewity sake, is missing a business layer. Parts of the responsibilities of this layer are moved to the Vet.java entity, e.g. getSpecialites, addSpecialites method etc. part is moved to Vets.java class, and parts are right in the vetList.html.
+
+Check the code in clean-code branch to see the fixes.
+
+[source]
+.VetViewModel.java
+----
+@XmlRootElement
+public class VetViewModel {
+
+    private String firstName;
+    private String lastName;
+    private String specialties;
+
+    public VetViewModel(Vet vet) {
+        this.firstName = vet.getFirstName();
+        this.lastName = vet.getLastName();
+        this.specialties = toSpecialities(vet);
+
+    }
+
+    private String toSpecialities(Vet vet) {
+        return vet.getSpecialties()
+            .stream()
+            .map(NamedEntity::getName)
+            .sorted()
+            .collect(Collectors.joining(" "));
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getSpecialties() {
+        return specialties;
+    }
+}
+----
+
+First we include a https://github.com/interventure-growingtogether/spring-petclinic-clean-code/blob/clean-code/src/main/java/org/springframework/samples/petclinic/vet/VetService.java[VetService.java]:
+
+[source]
+.VetService.java
+----
+@Service
+public class VetService {
+
+    private VetRepository vetRepository;
+
+    public VetService(VetRepository vetRepository) {
+        this.vetRepository = vetRepository;
+    }
+
+    @Transactional
+    public List<VetViewModel> findVets() {
+        return vetRepository.findAll().stream().map(vet -> new VetViewModel(vet)).collect(Collectors.toList());
+    }
+}
+----
+
+In addition to small refactors to the test and `VetController` we can consider this SRP violation fixed.
+
+=== The Sneaky
+
+The nasty bit was that we have to change a lot, the sneaky bit has to do with tests, and it follows in the separate blog post
+
+
+
+
+
+
+
+
+
+
+
+
