@@ -1,0 +1,48 @@
+== Names
+
+Naming Rules is my favorite set of rules. They provide great benefits at low cost.
+Name refactorings rarely cause things to break and with modern IDEs are quite an easy operation.
+
+Proper naming has one major objective.
+You should be able to have a reasonable expectation of what a class or a method is doing, just by reading its name.
+
+=== Names in Spring PetClinic
+
+Spring organizes its code by feature packages. The layout can be portrayed as the following:
+
+[plantuml]
+----
+@startsalt
+{
+{T
+ + World
+ ++ America
+ +++ Canada
+ +++ USA
+ ++++ New York
+ ++++ Boston
+ +++ Mexico
+ ++ Europe
+ +++ Italy
+ +++ Germany
+ ++++ Berlin
+ ++ Africa
+}
+}
+@endsalt
+----
+
+=== Use Solution Domain Names
+
+[quote, Robert C. Martin, 'Clean Code - A Handbook of Agaile Software Craftmanshift']
+____
+Remember that the people who read your code will be programmers. So go ahead and use computer science (CS) terms, algorithm names, pattern names, math terms, and so forth.____
+
+
+
+
+
+
+
+
+

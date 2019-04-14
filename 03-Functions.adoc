@@ -1,0 +1,128 @@
+== Clean Coding Spring PetClinic Functions
+
+In our previous posts, we discovered places where Spring Petclinic is violating the Single Responsibility Principle.
+
+We also learned, in quite a "dramatic" post :) that despite the high test coverage, tests are not testing everything that can possible break.
+
+This post will be more fun and relaxing, we'll be discussing some of the function-related clean code violations, and we're in for a treat.
+
+== Functions
+
+Clean code's view on the subject of functions is clear and precise. Functions should be simple, do one thing, and do it well. Simplicity is implied by the size, number of arguments, number or nested constructs within the function, just to name a few.
+
+There exits a famous example of having a boolean as function argument. Effectively, with a boolean as an argument, your're having a function that is doing at least two things. One for the `true` case, one for the `false` case.
+
+== Flag Arguments in Functions
+
+Let us examine one such method:
+
+[source, java]
+.Owner.java
+----
+public Pet getPet(String name, boolean ignoreNew) {
+        name = name.toLowerCase();
+        for (Pet pet : getPetsInternal()) {
+            if (!ignoreNew || !pet.isNew()) {
+                String compName = pet.getName();
+                compName = compName.toLowerCase();
+                if (compName.equals(name)) {
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+----
+
+Take a moment, and try to understand what this method is doing. Its a handfull of lines, yet, its not easy to grasp it completely. Let us do something about it.
+
+=== Extracting Methods
+
+As said earlier, whenever we have a function that accepts a boolean argument, we're in fact having two functions, one for the `true`, and
+one for the `false` case.
+
+The first thing to do is to extract these functions. IDEs help a lot with this kind of refactors.
+
+The `getPet` method is called from two places, but for one of the two `getPet(String name)` the IDE is showing that is not being used at all.
+
+Clean Code rules are simply in this regard, we should remove unused functions. This leaves us with a single call, where the `ignoreNew` is set to `true`.
+
+If we know that `ignoreNew` is always true, we know that `!ignoreNew` is always false. This means that we can simply the if condition and remove the argument.
+
+Our method now looks like:
+
+[source, java]
+.Owner.java
+----
+public Pet getPet(String name) {
+        name = name.toLowerCase();
+        for (Pet pet : getPetsInternal()) {
+            if (!pet.isNew()) {
+                String compName = pet.getName();
+                compName = compName.toLowerCase();
+                if (compName.equals(name)) {
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+----
+
+=== Functions Should be Small
+
+Common reasoning and knowing a language also helps. If we want to make the above functoin smaller, we can simply notice that calls to `lowerCase()` can be omitted by switching to `equalsIgnoreCase` in the condition.
+
+The method now looks:
+
+[source, java]
+.Owner.java
+----
+public Pet getPet(String name) {
+        for (Pet pet : getPetsInternal()) {
+            if (!pet.isNew()) {
+                if (pet.getName().equalsIgnoreCase(name)) {
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+----
+
+=== Remove Tabs
+
+The nested constructs such as nested if statements, nested loops or combination of if statements and loops are know to imped readability. By extracting functoins, we can always limit nesting to a single level.
+However, in the particular case, Java 8 stream constructs help us tackle all of the nesting with something like this:
+
+
+[source, java]
+----
+public Optional<Pet> getPet(String name) {
+       return getPetsInternal().stream()
+            .filter(p -> !p.isNew())
+            .filter(p -> p.getName().equalsIgnoreCase(name))
+            .findFirst();
+    }
+----
+
+Note that the we changed the return type of a function. We're not returning `null` anymore, and thus, the caller is not forced to do a null check. A simple call to `isPresent` on the optional instance is good
+
+=== Extract Boolean Methods
+
+The final touch on the method doesn't really belong to function related clean code rules, rather to naming rules (we're yet to speak about them). Still, we'll mention it here. A nice and safe readability booster happens when we
+extract predicate or if conditions into appropriately named methods.
+
+Final look on the method is:
+
+[source, java]
+----
+public Optional<Pet> getPet(String name) {
+       return getPetsInternal().stream()
+            .filter(isAlreadyExisting())
+            .filter(hasSameName(name))
+            .findFirst();
+    }
+----
+
+Let us try to answer the intial question now. What is `getPet` method doing? Retrieves already existing pet with a matching name.
