@@ -1,0 +1,238 @@
+== Comments
+
+Do good developers comment their code? Do comments make the code easier to understand?
+
+Clean Code frowns upon comments. I find the common clean code comment phrases quite amusing.
+
+First, comments are failures. Failures to express the intent in code.
+
+Second, comments are lies waiting to happen.
+
+On top of this, avoid comments that are redundant. They don't any additional value to the code they are referring to. Finally, they inevitably fall out of sync with the code.
+
+Let us see if these statement hold true when reviewing pet clinic example
+
+=== Comments are Failures
+
+Whenever you can you should express the comment in code. Observe this example:
+
+[source]
+.VetController.java
+----
+@GetMapping("/owners")
+    public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
+
+        // allow parameterless GET request for /owners to return all records
+        if (owner.getLastName() == null) {
+            owner.setLastName(""); // empty string signifies broadest possible search
+        }
+
+        // find owners by last name
+        Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
+        if (results.isEmpty()) {
+            // no owners found
+            result.rejectValue("lastName", "notFound", "not found");
+            return "owners/findOwners";
+        } else if (results.size() == 1) {
+            // 1 owner found
+            owner = results.iterator().next();
+            return "redirect:/owners/" + owner.getId();
+        } else {
+            // multiple owners found
+            model.put("selections", results);
+            return "owners/ownersList";
+        }
+    }
+----
+
+Can be refactored to:
+
+[source]
+.VetController.java
+----
+@GetMapping("/owners")
+    public String findOwners(Owner owner, BindingResult result, Map<String, Object> model) {
+        String searchTerm = owner.getLastName() != null ? owner.getLastName() : FIND_ALL;
+        Collection<Owner> owners = this.owners.findByLastName(searchTerm);
+        if (isEmpty(owners)) {
+            result.rejectValue("lastName", "notFound", "not found");
+            return "owners/findOwners";
+        } else if (hasUniqueOwner(owners)) {
+            owner = owners.iterator().next();
+            return "redirect:/owners/" + owner.getId();
+        } else {
+            model.put("selections", owners);
+            return "owners/ownersList";
+        }
+    }
+----
+
+We did the following, we expressed the `// no owners found` comment, in the code as `isEmpty(owners)`.
+
+We also refactored to hacky, confusing and errorProne statements:
+
+[source, java]
+----
+// allow parameterless GET request for /owners to return all records
+if (owner.getLastName() == null) {
+    owner.setLastName(""); // empty string signifies broadest possible search
+}
+----
+
+to something like
+
+[source, java]
+----
+String searchTerm = owner.getLastName() != null ? owner.getLastName() : FIND_ALL;
+----
+
+There's a few more changes that follow the same line of thinking, but you've caught the gist by now.
+
+Indeed, most of the comments can truly be expressed in code. It takes some will to do it though.
+
+=== Comments Lie
+
+While it may sound funny, comments are indeed lies to be happen'. Let's revisit again the `getPet` method:
+
+[source]
+.Owner.java
+----
+/**
+     * Return the Pet with the given name, or null if none found for this Owner.
+     *
+     * @param name to test
+     * @return true if pet name is already in use
+     */
+    public Pet getPet(String name, boolean ignoreNew) {
+        name = name.toLowerCase();
+        for (Pet pet : getPetsInternal()) {
+            if (!ignoreNew || !pet.isNew()) {
+                String compName = pet.getName();
+                compName = compName.toLowerCase();
+                if (compName.equals(name)) {
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+----
+
+Check the method comment `@return true if pet name is already in use`. In fact, `getPet` is never returning `true`.
+Perhaps it used to, but this has changed and the comment left standing and missinforming.
+
+=== Avoid Redundant Code
+
+[quote, Robert C. Martin, 'Clean Code - A Handbook of Agaile Software Craftmanshift']
+____
+Comments should say things that the code cannot say for itself.
+____
+
+At the very gates of Spring PetClinic Application, there stands the:
+
+[source, java]
+.PetClinicApplication.java
+----
+/**
+ * PetClinic Spring Boot Application.
+ *
+ * @author Dave Syer
+ *
+ */
+@SpringBootApplication
+public class PetClinicApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(PetClinicApplication.class, args);
+    }
+
+}
+----
+
+Check the class comment and see what does it say, that can't be inffered by reading the first two lines of code already.
+
+Even the `author Dave Syer` (Dave, if you ever read this, love your work :) ), is redundant. Its enough to consult commit history to learn
+that, yes, there's Dave, but also, there's Antoine Rey, Stephane Nicoll etc.
+
+Redundant comments tend to clutter the code with details that are needless, therefore are better of removed.
+
+=== Comments Fall Out of Sync
+
+Observe the two methods from the `VetController.java`:
+
+[source]
+.VetController.java
+----
+@GetMapping("/vets.html")
+  public String showVetList(Map<String, Object> model) {
+      // Here we are returning an object of type 'Vets' rather than a collection of Vet
+      // objects so it is simpler for Object-Xml mapping
+      Vets vets = new Vets();
+      vets.getVetList().addAll(this.vets.findAll());
+      model.put("vets", vets);
+      return "vets/vetList";
+  }
+
+  @GetMapping({ "/vets" })
+  public @ResponseBody Vets showResourcesVetList() {
+      // Here we are returning an object of type 'Vets' rather than a collection of Vet
+      // objects so it is simpler for JSon/Object mapping
+      Vets vets = new Vets();
+      vets.getVetList().addAll(this.vets.findAll());
+      return vets;
+  }
+----
+
+You likely spot code duplication. The natural first reflex is to extract the duplicated code in a single method.
+
+Say that you extract the method but capture the comment as well:
+
+[source]
+.VetController.java
+----
+@GetMapping("/vets.html")
+  public String showVetList(Map<String, Object> model) {
+      Vets vets = findVets();
+      model.put("vets", vets);
+      return "vets/vetList";
+  }
+
+  @GetMapping({ "/vets" })
+  public @ResponseBody Vets showResourcesVetList() {
+      // Here we are returning an object of type 'Vets' rather than a collection of Vet
+      // objects so it is simpler for JSon/Object mapping
+      Vets vets = findVets();
+      vets.getVetList().addAll(this.vets.findAll());
+      return vets;
+  }
+
+  private Vets findVets() {
+      // Here we are returning an object of type 'Vets' rather than a collection of Vet
+      // objects so it is simpler for Object-Xml mapping
+      Vets vets = new Vets();
+      vets.getVetList().addAll(this.vets.findAll());
+ }
+----
+
+However, you decide to go about it, you'll end up with one of the two comments falling out of sync, because, while the code is the same, the comments are different.
+
+== Conclusion
+As you can see, comments are overestimated. They rot quicker then the code.
+
+This is not to say that you should never write a comment. If you're dealing
+with a non-expressive code such as regexp or properties files, comments can be of help.
+If you're commenting on a hack, or deal with a generated code, using comments is adding value.
+
+Most of the times, however, comments can either be expressed in code, or be removed as redundant.
+Lowering the comments to the very essential has one positive consequence. Comments become more notable and better maintained.
+People will read the handfull of comments, if they know they are there for a good reason.
+
+
+
+
+
+
+
+
+
+
