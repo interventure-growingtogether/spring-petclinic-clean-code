@@ -3,10 +3,24 @@
 Naming Rules is my favorite set of rules. They provide great benefits at low cost.
 Name refactorings rarely cause things to break and with modern IDEs are quite an easy operation.
 
-Proper naming has one major objective.
-You should be able to have a reasonable expectation of what a class or a method is doing, just by reading its name.
+Proper naming has one major objective. You should be able to have a reasonable expectation of what a class or a method is doing,
+just by reading its name.
 
 === Names in Spring PetClinic
+
+We'll be checking class, method and variable names along the following checklist:
+
+.Naming issues
+* [ ]  names that are not properly revealing the intent
+* [ ]  declarations that are far from the actual usage
+* [ ]  long names of short scoped variables
+* [ ]  short names of long scoped variables
+* [ ]  names clarified with comments
+* [ ]  names with encodings
+* [ ]  names with meaningless suffix
+* [ ]  names with meaningless prefix
+
+Namings in Spring PetClinic are quite according to the Clean Code standards. There are no big findings.
 
 Spring organizes its code by feature packages. The layout can be portrayed as the following:
 
@@ -15,19 +29,16 @@ Spring organizes its code by feature packages. The layout can be portrayed as th
 @startsalt
 {
 {T
- + World
- ++ America
- +++ Canada
- +++ USA
- ++++ New York
- ++++ Boston
- +++ Mexico
- ++ Europe
- +++ Italy
- +++ Germany
- ++++ Berlin
- ++ Africa
-}
+ + org.springframework.samples.petclinic.model
+ ++ ...
+ + org.springframework.samples.petclinic.owner
+ ++...
+ + org.springframework.samples.petclinic.vet
+ ++ ...
+ + org.springframework.samples.petclinic.system
+ ++ ...
+ + org.springframework.samples.petclinic.visit
+ }
 }
 @endsalt
 ----
@@ -36,7 +47,147 @@ Spring organizes its code by feature packages. The layout can be portrayed as th
 
 [quote, Robert C. Martin, 'Clean Code - A Handbook of Agaile Software Craftmanshift']
 ____
-Remember that the people who read your code will be programmers. So go ahead and use computer science (CS) terms, algorithm names, pattern names, math terms, and so forth.____
+Remember that the people who read your code will be programmers. 
+So go ahead and use computer science (CS) terms, algorithm names,
+ pattern names, math terms, and so forth.
+____
+
+The listed concepts comprise the solution domain. I would say that this idea applies for well known framework concepts as well. 
+If you are a Spring developer, you know what to expect when you see `Controller`
+`Service` or `Repository` in a class name.
+
+=== Inspecting Spring PetClinic Class Names
+
+With the solution domain rule in mind, let us inspect the class names within the `owner` package:
+
+[plantuml]
+----
+@startsalt
+{
+{T
+ + org.springframework.samples.petclinic.owner
+ ++Owner.java
+ ++OwnerController.java
+ ++OwnerRepository.java
+ ++Pet.java
+ ++PetController.java
+ ++PetRepository.java
+ ++PetType.java
+ ++PetTypeFormatter.java
+ ++PetValidator.java
+ ++VisitController.java
+}
+}
+@endsalt
+----
+
+Anyone with more than one spring project under his belt, should have no issues with
+`OwnerController`, `OwnerRepository`, `PetConroller`, `PetRepository`,
+`VisitController`.
+Even `PetTypeFormatter` and `PetValiator` are common concepts, only not used as often.
+
+This leaves us with `Owner` and `Pet`. I would bet five bucks that they are model classes, entities even.
+I would win the bet, they are, so all expected here.
+
+Let us try with `vet` package:
+
+[plantuml]
+----
+@startsalt
+{
+{T
++ org.springframework.samples.petclinic.vet
+++ Specialty.java
+++ Vet.java
+++ VetController.java
+++ VetRepository.java
+++ Vets.java
+}
+}
+@endsalt
+----
+
+Do you notice something peculiar here? I was inspecting class names exactly in the similar fashion, and I did get confused with
+`Vets` class. If we have a `Vet` model class, why would we have `Vets` class. What would be a difference between a `Vets` and a list of `Vet` instances?
+
+By opening the https://github.com/interventure-growingtogether/spring-petclinic-clean-code/blob/original/src/main/java/org/springframework/samples/petclinic/vet/Vets.java[`Vets.java`] class,
+ we see that its a model that is passing the data to the view, but there's nothing in the name that implies this.
+
+=== Inspecting the Method Names
+
+On a method level, we can say that PetClinic is doing a pretty good job. Let us examine the `OwnerController.java` method names:
+
+[source,java]
+.OwnerController.java
+----
+setAllowedFields
+initCreationForm
+processCreationForm
+initFindForm
+processFindForm
+initUpdateOwnerForm
+processUpdateOwnerForm
+showOwner
+----
+
+Each method name starts with a verb. We quickly notice a pattern btw. `init` and `process` used interchangeably.
+
+Slightly more engaging is figuring out what the methods of the `VetController.java` are doing:
+
+[source,java]
+.VetController.java
+----
+showVetList
+showResourcesVetList
+----
+
+What is the difference between the two methods? After inspecting the code, I believe that better names would be:
+
+[source,java]
+.VetController.java
+----
+showAllVetsInView
+findAllVets
+----
+
+Guess what the methods are doing based on the original names, and then based on the changed names
+
+=== Inspecting Variable Names
+
+Finally, let's examine variable names. If I'm not missing anything of the obvious, the only naming issue worth commenting, we can find in the otherwise ugly
+`getPetName()` method:
+
+[source,java]
+.Owner.java
+----
+    public Pet getPet(String name, boolean ignoreNew) {
+        name = name.toLowerCase();
+        for (Pet pet : getPetsInternal()) {
+            if (!ignoreNew || !pet.isNew()) {
+                String compName = pet.getName();
+                compName = compName.toLowerCase();
+                if (compName.equals(name)) {
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+----
+
+Notice the `compName` variable. The name is meaningles. Considering the short scope, having something like `pn` would be a better fit.
+We discussed this complete method in  the Functios section, so in any case it doesn't exist in the `clean-code` version.
+
+=== Conclusion
+
+Naming is power that we should learn how to use. We want to give ourselves and others, the option to have proper expectations based on the name without having to reach for the code.
+Naming refactors are typically safe, and its quite common that as we go, we find better names and change them. This accounts for continuous renaming.
+
+Spring PetClinic does look as the application that followed this routine.
+
+
+
+
 
 
 

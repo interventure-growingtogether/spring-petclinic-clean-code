@@ -217,6 +217,7 @@ Say that you extract the method but capture the comment as well:
 However, you decide to go about it, you'll end up with one of the two comments falling out of sync, because, while the code is the same, the comments are different.
 
 == Conclusion
+
 As you can see, comments are overestimated. They rot quicker then the code.
 
 This is not to say that you should never write a comment. If you're dealing
@@ -225,7 +226,7 @@ If you're commenting on a hack, or deal with a generated code, using comments is
 
 Most of the times, however, comments can either be expressed in code, or be removed as redundant.
 Lowering the comments to the very essential has one positive consequence. Comments become more notable and better maintained.
-People will read the handfull of comments, if they know they are there for a good reason.
+People will read the handful of comments, if they know they are there for a good reason.
 
 
 

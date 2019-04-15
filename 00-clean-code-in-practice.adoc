@@ -2,7 +2,8 @@
 
 Do you use clean code practices in your work. If yes, why? If no, why?
 
-This post, follows the InterVenture Jam Session talk, "Clean Code in Practice". The talk is targeting an interesting phenomena. Most of the developers I know, are familiar and quite appreciative about the clean code practices, however, in reality they use only a handfull of routines.
+This post, follows the InterVenture Jam Session talk, "Clean Code in Practice". The talk is targeting an interesting phenomena.
+Most of the developers I know, are familiar and quite appreciative about the clean code practices, however, in reality they use only a handful of routines.
 
 Let me give you an example. During the talk, amongst the thirty something developers of varying experience, all have said that they have heard about clean code. I followed with a question of who's using the routines on a daily basis. There was only a single hand still standing.
 
