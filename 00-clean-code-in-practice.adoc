@@ -1,25 +1,78 @@
 == Clean Code in Practice
 
-Do you use clean code practices in your work. If yes, why? If no, why?
+Do you use Clean Code practices on a daily basis. If yes, why? If no, why?
 
-This post, follows the InterVenture Jam Session talk, "Clean Code in Practice". The talk is targeting an interesting phenomena.
-Most of the developers I know, are familiar and quite appreciative about the clean code practices, however, in reality they use only a handful of routines.
+This post, follows the https://www.interventure.info/[InterVenture] Jam Session talk, "Clean Code in Practice". The talk is targeting an interesting phenomena.
 
-Let me give you an example. During the talk, amongst the thirty something developers of varying experience, all have said that they have heard about clean code. I followed with a question of who's using the routines on a daily basis. There was only a single hand still standing.
+IMPORTANT: Majority of developers are familiar and appreciative about the Clean Code practices. However, in practice they use only a handful of routines.
 
-What is behind this gap? Is it that we don't believe in the benefits of clean code? Or is it that the costs are not worth the benefit?
+This is a personal observation that I keep asserting as true. Let me give you an example.
+During the talk, amongst the thirty something developers of varying experience,
+all have said that they have heard about clean code.
+When followed with a question of who's using the routines on a daily basis.
+There was only a single hand still standing.
 
-Clean code in practice talk tries to asses the value of clean code when applied to real life applications. We target a well known Spring Petclinic example as an example of source code that is on pair to the code we do on our everyday basis. It reviews it from the clean code perspective and asses the value of the comments and changes brought upon the applied clean code practices. This series of blog posts are our findings.
+What is behind this gap? Is it that we don't believe in the benefits of clean code?
+ Or is it that the costs are not worth the benefit?
+
+Clean code in practice talk tries to asses the value of clean code when applied
+to real life applications.
+
+We target a well known Spring PetClinic app as an example of a source code
+ that is on pair to with the code we do on our everyday basis.
+ We'll review it from the Clean Code perspective and asses the value of
+ the changes brought upon the applied clean code practices.
+
+This series of blog posts presents the findings.
 
 === Cycling Helmet Analogy
 
 Why don't we use CC routines more often? I can express my belief with an analogy. Do you use a cycling helmet when going for a joy ride? Despite being an undisputable good thing, many don't. The belief that you won't really need it, combined with a slight nuisance of having to carry it around, topped with a potentially ruined hair style, makes the decision of ignoring the helmet quite likely. Even if it can be a life saver.
 
-It's not that we're not aware of the risk. I rarely see kids without the helmet. However, we ourselves, we're pro's. We ride for a long time, and believe competent enough that it will not happen to us, not to us or not this time.
+It's not that we're not aware of the risk. I rarely see kids without the helmet. However, we ourselves, we feel as pro's.
+ We ride for a long time, and believe competent enough that we will not fall. It will not happen to us, not to us or not this time.
 
-Until we fall. Afterwards, the helmet is a must, and we frown upon people ignoring it.
+Until we do fall. Afterwards, the helmet is a must, and we frown upon people ignoring it.
 
+=== Reality
 
+Just like with the helmet, we trust ourselves with the code.
+First of all, we do tests. We also use architecture frameworks Spring, Angular or something third.
+So, if we are testing, if we're using MVC, the rest is cosmetic, right?
+In addition, we don't have all the time in the world. And Clean Code requires time.
 
+At least I speak about my personal perspective from the early days.
+What changed for me is that I joined a project that is in production for a loooong time.
+We deal with uber classes, measured in thousands of lines of code.
+Do you think that the classes having several thousand lines is properly tested?
+Do you think this class does something important?
+The only thing we can rely on is the messy code that we need to understand, day in, day out.
+We're reaching near zero productivity. We're afraid of breaking things. We're stuck.
 
+The point we reached is perfectly described in
+https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882[Clean Code: A Handbook of Agile Software Craftsmanship].
+There's something about the personal experience that makes you become a believer.
+ My second read, was as reading Agatha Christie's novel.
+
+For the two years I'm practicing Clean Code routines in a much greater extent then ever before, I see a shift for the better.
+This is what I'm trying to communicate.
+
+=== Code Cleaning Spring PetClinic
+
+Spring PetClinic is a good target as it is in a really good shape and familiar to millions. Its the only case of a demo application that has its own community, that I'm aware of.
+In addition Spring as framework, just as Clean Code, is on a mission of enabling apps that are easy to change and evolve.
+
+Following are the findings of Spring PetClinic review finding, sorted by the degree of drama:
+
+include::01-single-responsibility-principle-violation.adoc[01 Single Responsibility Principle]
+
+include::02-clean-code-tests.adoc[02 Testing]
+
+include::03-Functions.adoc[03 Functions]
+
+include::04-comments.adoc[04 Comments]
+
+include::05-names.adoc[05 Names]
+
+== Conclusion
 
