@@ -176,7 +176,7 @@ public class VetViewModel {
 
 First we include a https://github.com/interventure-growingtogether/spring-petclinic-clean-code/blob/clean-code/src/main/java/org/springframework/samples/petclinic/vet/VetService.java[VetService.java]:
 
-[source]
+[source, java]
 .VetService.java
 ----
 @Service
@@ -190,7 +190,9 @@ public class VetService {
 
     @Transactional
     public List<VetViewModel> findVets() {
-        return vetRepository.findAll().stream().map(vet -> new VetViewModel(vet)).collect(Collectors.toList());
+        return vetRepository.findAll().stream()
+        .map(vet -> new VetViewModel(vet))
+        .collect(Collectors.toList());
     }
 }
 ----
