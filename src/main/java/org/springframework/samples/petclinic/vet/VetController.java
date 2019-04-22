@@ -40,14 +40,18 @@ class VetController {
     public String showVetList(Map<String, Object> model) {
         // Here we are returning an object of type 'Vets' rather than a collection of Vet
         // objects so it is simpler for Object-Xml mapping
-        Vets vets = new Vets();
-        vets.getVetList().addAll(this.vets.findAll());
+        Vets vets = findAllVets();
         model.put("vets", vets);
         return "vets/vetList";
     }
 
     @GetMapping({ "/vets" })
     public @ResponseBody Vets showResourcesVetList() {
+        Vets vets = findAllVets();
+        return vets;
+    }
+
+    private Vets findAllVets() {
         // Here we are returning an object of type 'Vets' rather than a collection of Vet
         // objects so it is simpler for JSon/Object mapping
         Vets vets = new Vets();

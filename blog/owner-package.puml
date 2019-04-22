@@ -1,0 +1,17 @@
+@startsalt
+{
+{T
+ + org.springframework.samples.petclinic.owner
+ ++Owner.java
+ ++OwnerController.java
+ ++OwnerRepository.java
+ ++Pet.java
+ ++PetController.java
+ ++PetRepository.java
+ ++PetType.java
+ ++PetTypeFormatter.java
+ ++PetValidator.java
+ ++VisitController.java
+}
+}
+@endsalt

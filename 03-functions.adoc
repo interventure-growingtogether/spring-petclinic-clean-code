@@ -1,4 +1,4 @@
-== Clean Coding Spring PetClinic Functions
+== Functions
 
 In our previous posts, we discovered places where Spring Petclinic is violating the Single Responsibility Principle.
 
@@ -6,13 +6,13 @@ We also learned, in quite a "dramatic" post :) that despite the high test covera
 
 This post will be more fun and relaxing, we'll be discussing some of the function-related clean code violations, and we're in for a treat.
 
-== Functions
+=== Functions Must be Simple
 
 Clean code's view on the subject of functions is clear and precise. Functions should be simple, do one thing, and do it well. Simplicity is implied by the size, number of arguments, number or nested constructs within the function, just to name a few.
 
 There exits a famous example of having a boolean as function argument. Effectively, with a boolean as an argument, your're having a function that is doing at least two things. One for the `true` case, one for the `false` case.
 
-== Flag Arguments in Functions
+=== Flag Arguments in Functions
 
 Let us examine one such method:
 
@@ -108,7 +108,7 @@ public Optional<Pet> getPet(String name) {
 
 Note that the we changed the return type of a function. We're not returning `null` anymore, and thus, the caller is not forced to do a null check. A simple call to `isPresent` on the optional instance is good
 
-=== Extract Boolean Methods
+=== Extract Boolean Clauses
 
 The final touch on the method doesn't really belong to function related clean code rules, rather to naming rules (we're yet to speak about them). Still, we'll mention it here. A nice and safe readability booster happens when we
 extract predicate or if conditions into appropriately named methods.
@@ -125,4 +125,4 @@ public Optional<Pet> getPet(String name) {
     }
 ----
 
-Let us try to answer the intial question now. What is `getPet` method doing? Retrieves already existing pet with a matching name.
+Let us try to answer the initial question now. What is `getPet` method doing? Retrieves already existing pet with a matching name.

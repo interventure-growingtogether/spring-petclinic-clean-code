@@ -82,21 +82,23 @@ class OwnerController {
             owner.setLastName(""); // empty string signifies broadest possible search
         }
 
-        // find owners by last name
-        Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
-        if (results.isEmpty()) {
-            // no owners found
+        Collection<Owner> ownersByLastName = this.owners.findByLastName(owner.getLastName());
+        if (hasNoOwners(ownersByLastName)) {
             result.rejectValue("lastName", "notFound", "not found");
             return "owners/findOwners";
-        } else if (results.size() == 1) {
+        } else if (ownersByLastName.size() == 1) {
             // 1 owner found
-            owner = results.iterator().next();
+            owner = ownersByLastName.iterator().next();
             return "redirect:/owners/" + owner.getId();
         } else {
             // multiple owners found
-            model.put("selections", results);
+            model.put("selections", ownersByLastName);
             return "owners/ownersList";
         }
+    }
+
+    private boolean hasNoOwners(Collection<Owner> ownersByLastName) {
+        return ownersByLastName.isEmpty();
     }
 
     @GetMapping("/owners/{ownerId}/edit")
@@ -107,7 +109,8 @@ class OwnerController {
     }
 
     @PostMapping("/owners/{ownerId}/edit")
-    public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId) {
+    public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result,
+        @PathVariable("ownerId") int ownerId) {
         if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {

@@ -24,24 +24,7 @@ Namings in Spring PetClinic are quite according to the Clean Code standards. The
 
 Spring organizes its code by feature packages. The layout can be portrayed as the following:
 
-[plantuml]
-----
-@startsalt
-{
-{T
- + org.springframework.samples.petclinic.model
- ++ ...
- + org.springframework.samples.petclinic.owner
- ++...
- + org.springframework.samples.petclinic.vet
- ++ ...
- + org.springframework.samples.petclinic.system
- ++ ...
- + org.springframework.samples.petclinic.visit
- }
-}
-@endsalt
-----
+image::blog/vet-package.png[width="50%"]
 
 === Use Solution Domain Names
 
@@ -60,26 +43,7 @@ If you are a Spring developer, you know what to expect when you see `Controller`
 
 With the solution domain rule in mind, let us inspect the class names within the `owner` package:
 
-[plantuml]
-----
-@startsalt
-{
-{T
- + org.springframework.samples.petclinic.owner
- ++Owner.java
- ++OwnerController.java
- ++OwnerRepository.java
- ++Pet.java
- ++PetController.java
- ++PetRepository.java
- ++PetType.java
- ++PetTypeFormatter.java
- ++PetValidator.java
- ++VisitController.java
-}
-}
-@endsalt
-----
+image::blog/petclinic-packages.png[width="50%"]
 
 Anyone with more than one spring project under his belt, should have no issues with
 `OwnerController`, `OwnerRepository`, `PetConroller`, `PetRepository`,
@@ -91,21 +55,7 @@ I would win the bet, they are, so all expected here.
 
 Let us try with `vet` package:
 
-[plantuml]
-----
-@startsalt
-{
-{T
-+ org.springframework.samples.petclinic.vet
-++ Specialty.java
-++ Vet.java
-++ VetController.java
-++ VetRepository.java
-++ Vets.java
-}
-}
-@endsalt
-----
+image::blog/vet-package.png[width="50%"]
 
 Do you notice something peculiar here? I was inspecting class names exactly in the similar fashion, and I did get confused with
 `Vets` class. If we have a `Vet` model class, why would we have `Vets` class. What would be a difference between a `Vets` and a list of `Vet` instances?
@@ -178,7 +128,7 @@ Finally, let's examine variable names. If I'm not missing anything of the obviou
 Notice the `compName` variable. The name is meaningles. Considering the short scope, having something like `pn` would be a better fit.
 We discussed this complete method in  the Functios section, so in any case it doesn't exist in the `clean-code` version.
 
-=== Conclusion
+=== Naming Conclusion
 
 Naming is power that we should learn how to use. We want to give ourselves and others, the option to have proper expectations based on the name without having to reach for the code.
 Naming refactors are typically safe, and its quite common that as we go, we find better names and change them. This accounts for continuous renaming.

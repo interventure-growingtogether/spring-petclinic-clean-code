@@ -1,34 +1,35 @@
-== Spring PetClinic Test
+== Testing
 
 There's at least half a dozen reasons why Spring PetClinic is so well geared for clean code review.
 
-First, the expectation that the code quality level is already high enough, as it is being reviewed by thousand of souls on daily basis.
+First, the expectation that the code quality level is already high enough, as it is being reviewed by thousand of souls on a daily basis.
 
 Second, Spring as a frameworks strives for the similar goals as clean code, promoting good design, that is testable and easy to change.
 
 Third, crucial for this section, its quite well tested, JaCoCo plugin reports coverage that is above 90%.
 
-=== Clean Code Tests
+=== How Many Tests Should be in a Test Suite?
 
 Is code coverage 90% enough? It sounds like it for sure. Here's a quote for you:
 
-QUOTE: How many tests should be in a test suite? Unfortunately, the metric many programmers use is “That seems like enough.” A test suite should test everything that could possibly break. The tests are insufficient so long as there are conditions that have not been explored by the tests or calculations that have not been validated.
+[quote, Robert C. Martin, 'Clean Code - A Handbook of Agaile Software Craftmanshift']
+____
+How many tests should be in a test suite? Unfortunately, the metric many programmers use is “That seems like enough.” A test suite should test everything that could possibly break. The tests are insufficient so long as there are conditions that have not been explored by the tests or calculations that have not been validated.
+____
 
 Still, CC celebrates the usage of a coverage tool, and 90% is surely a good starting point.
 
-=== EAGER Code Smell
+=== Test Everything That Can Break
 
-Remember the previous post? We we're examining the `Vet.java`. There's was one technical issue that immediate caught my attention.
+Remember the previous post? We we're examining the `Vet.java`. There was one technical issue that immediate caught my attention.
 The relation toward `specialties` was marked as EAGER.
-In fact its a well known https://vladmihalcea.com/eager-fetching-is-a-code-smell[anti-pattern].
+In fact, its a well known https://vladmihalcea.com/eager-fetching-is-a-code-smell[anti-pattern].
 
 It's basically like `all you can eat` restaurant, where no-one is really checking the tickets. This way you can bring all of your relative, and relatives of your relatives, and eat all that you can with only a single ticket pay.
 
 If specialities were to have simliar kind of eager relations, retrieving a name of a single Vet would result in many more records pulled from the database.
 
-The reason why this is intriguing even from the clean code perspective is due to the fact that the `specialities` are accessed from the view. I was accepting that `EAGER` is there to hide the https://vladmihalcea.com/the-best-way-to-handle-the-lazyinitializationexception/[LazyInitializationException]. To my suprise, the app was working even after changing EAGER to LAZY.
-
-=== Open Session in View
+The reason why this is intriguing even from the clean code perspective is due to the fact that the `specialities` are accessed from the view. I was accepting that `EAGER` is there to hide the https://vladmihalcea.com/the-best-way-to-handle-the-lazyinitializationexception/[LazyInitializationException]. To my suprise, the app was working even after changing `EAGER` to `LAZY`.
 
 The confusion lasted for a moment only. I learned that Spring Boot Application is using a property: `spring.jpa.open-in-view` set to `true` by default.
 
@@ -38,15 +39,19 @@ If anyone is interested in details about why is the default value set to true, r
 
 The summary of the debate is what Phill Web from the spring team mentioned:
 
-  QUOTE:After a lot (and I do mean a lot) of discussion we've decided to leave things as they are. The primary reason is that people upgrading are likely to face very subtle issues that only manifest themselves in certain circumstances.
-  If we were starting from a clean slate we may well have picked a different default, but we think the pain of changing the default (even at a major release) is going to cause more bugs than leaving things as they are.
+[quote, Phil Webb, '']
+____
+After a lot (and I do mean a lot) of discussion we've decided to leave things as they are. The primary reason is that people upgrading are likely to face very subtle issues that only manifest themselves in certain circumstances.
+
+If we were starting from a clean slate we may well have picked a different default, but we think the pain of changing the default (even at a major release) is going to cause more bugs than leaving things as they are.
+____
 
 I understand both points in debate. One was that Spring Boot attempts at giving a pleasent start experience for the developers. They should not be faced with a technical exception firing in the view at the very beginning of learning.
 On the other hand, the closer the code gets to production, the more problematic it gets to change it.
 
 But, going back to clean code. From the clean code perspective, the default value should have been the one that doesn't cause any fear of change. The default should have been `false`.
 
-=== The Sneaky
+=== Test Clean Code Conclusion
 
 We mentioned in previous post that coupling an Entity to view is nasty due to the impact of change needed to fix it. The sneaky part is something different. If, for the reasons given above, we change EAGER to LAZY, and
 `spring.jpa.open-in-view` to false, and run the application, we'll get an error page as soon as we try to list all vets.
