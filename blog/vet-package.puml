@@ -1,0 +1,12 @@
+@startsalt
+{
+{T
++ org.springframework.samples.petclinic.vet
+++ Specialty.java
+++ Vet.java
+++ VetController.java
+++ VetRepository.java
+++ Vets.java
+}
+}
+@endsalt

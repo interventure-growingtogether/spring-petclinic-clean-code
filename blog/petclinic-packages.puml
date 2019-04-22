@@ -1,0 +1,15 @@
+@startsalt
+{
+{T
+ + org.springframework.samples.petclinic.model
+ ++ ...
+ + org.springframework.samples.petclinic.owner
+ ++...
+ + org.springframework.samples.petclinic.vet
+ ++ ...
+ + org.springframework.samples.petclinic.system
+ ++ ...
+ + org.springframework.samples.petclinic.visit
+ }
+}
+@endsalt

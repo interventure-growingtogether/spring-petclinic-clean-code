@@ -94,7 +94,7 @@ Indeed, most of the comments can truly be expressed in code. It takes some will 
 
 While it may sound funny, comments are indeed lies to be happen'. Let's revisit again the `getPet` method:
 
-[source]
+[source, java]
 .Owner.java
 ----
 /**
@@ -216,7 +216,7 @@ Say that you extract the method but capture the comment as well:
 
 However, you decide to go about it, you'll end up with one of the two comments falling out of sync, because, while the code is the same, the comments are different.
 
-== Conclusion
+=== Comments Conclusion
 
 As you can see, comments are overestimated. They rot quicker then the code.
 
